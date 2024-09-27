@@ -1,21 +1,27 @@
 const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
+const cors = require('cors');           // Import CORS to handle cross-origin requests
+const mongoose = require('mongoose');   // Import Mongoose for MongoDB connection
+require('dotenv').config();             // Import dotenv to load environment variables
 
-// Create an Express app
 const app = express();
-app.use(cors());
 
-// Increase the payload limit
-app.use(express.json({ limit: '10mb' }));  // Increase the JSON body size limit to 10MB
-app.use(express.urlencoded({ limit: '10mb', extended: true }));  // Increase the URL-encoded body size limit to 10MB
+// Enable CORS for your specific frontend (replace with your Netlify frontend URL)
+app.use(cors({
+  origin: ['https://whimsical-pudding-0fad50.netlify.app/']  // Replace this with your Netlify URL
+}));
 
-// Connect to MongoDB (replace with your connection string)
-mongoose.connect('mongodb+srv://samarthasamurai:pro1236@cluster0.3plio.mongodb.net/', { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log('Connected to MongoDB'))
-  .catch((err) => console.error('Failed to connect to MongoDB', err));
+// Middleware to parse JSON bodies
+app.use(express.json());
 
-// Define a Mongoose schema and model for Awardees
+// Connect to MongoDB Atlas
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log('Connected to MongoDB'))
+.catch((err) => console.error('MongoDB connection error:', err));
+
+// Define Mongoose schema and model for Awardees
 const awardeeSchema = new mongoose.Schema({
   slNo: String,
   name: String,
@@ -30,23 +36,26 @@ const Awardee = mongoose.model('Awardee', awardeeSchema);
 
 // GET: Fetch all awardees
 app.get('/awardees', async (req, res) => {
-    try {
-      const awardees = await Awardee.find();  // Fetch all awardees from MongoDB
-      res.json(awardees);  // Return the awardees as JSON
-    } catch (error) {
-      res.status(500).json({ error: 'Failed to fetch awardees' });  // Handle errors
-    }
-  });
-  
+  try {
+    const awardees = await Awardee.find();   // Fetch all awardees from MongoDB
+    res.json(awardees);                      // Send awardees as JSON response
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to fetch awardees' });  // Error handling
+  }
+});
 
 // POST: Add a new awardee
 app.post('/awardees', async (req, res) => {
-  const newAwardee = new Awardee(req.body);
-  await newAwardee.save();
-  res.status(201).json(newAwardee);
+  try {
+    const newAwardee = new Awardee(req.body);  // Create a new awardee document
+    await newAwardee.save();                   // Save it to MongoDB
+    res.status(201).json(newAwardee);          // Return the created awardee as JSON
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to add awardee' });  // Error handling
+  }
 });
 
-// Root route (optional)
+// Root route (optional: just to check if the server is running)
 app.get('/', (req, res) => {
   res.send('Backend API is running. Use /awardees to interact with the API.');
 });
