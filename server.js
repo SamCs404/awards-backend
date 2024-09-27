@@ -7,19 +7,16 @@ const app = express();
 
 // Enable CORS for your specific frontend (replace with your Netlify frontend URL)
 app.use(cors({
-  origin: ['https://whimsical-pudding-0fad50.netlify.app/']  // Replace this with your Netlify URL
+  origin: ['https://extraordinary-licorice-f3e5cf.netlify.app/']  // Replace with your Netlify URL
 }));
 
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-// Connect to MongoDB Atlas
-mongoose.connect(process.env.MONGO_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-})
-.then(() => console.log('Connected to MongoDB'))
-.catch((err) => console.error('MongoDB connection error:', err));
+// Connect to MongoDB Atlas (without deprecated options)
+mongoose.connect(process.env.MONGO_URI)
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((err) => console.error('MongoDB connection error:', err));
 
 // Define Mongoose schema and model for Awardees
 const awardeeSchema = new mongoose.Schema({
