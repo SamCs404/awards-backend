@@ -5,15 +5,13 @@ require('dotenv').config();             // Import dotenv to load environment var
 
 const app = express();
 
-// Enable CORS for your specific frontend (replace with your Netlify frontend URL)
-app.use(cors({
-  origin: ['https://tranquil-pegasus-730ef1.netlify.app/']  // Replace with your Netlify URL
-}));
+// Enable CORS (allow all origins temporarily for testing)
+app.use(cors());
 
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-// Connect to MongoDB Atlas (without deprecated options)
+// Connect to MongoDB Atlas using the MONGO_URI environment variable
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('Connected to MongoDB'))
   .catch((err) => console.error('MongoDB connection error:', err));
