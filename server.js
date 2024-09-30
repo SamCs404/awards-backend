@@ -7,7 +7,7 @@ const app = express();
 
 // Enable CORS for your specific frontend (replace with your Netlify frontend URL)
 app.use(cors({
-  origin: ['https://lovely-liger-04bf57.netlify.app/']  // Replace with your Netlify URL
+  origin: ['https://tranquil-pegasus-730ef1.netlify.app/']  // Replace with your Netlify URL
 }));
 
 // Middleware to parse JSON bodies
